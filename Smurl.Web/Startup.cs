@@ -6,6 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Smurl.Web.Hubs;
+using Microsoft.Extensions.Azure;
+using Azure.Storage.Queues;
+using Azure.Storage.Blobs;
+using Azure.Core.Extensions;
+using System;
 
 namespace Smurl.Web
 {
@@ -34,11 +39,16 @@ namespace Smurl.Web
         {            
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            services.AddSignalR();
+            services.AddSignalR().AddAzureSignalR();
             services.AddMediatR(options =>
             {
                 options.AsTransient();
             }, Assembly.GetExecutingAssembly());
+            services.AddAzureClients(builder =>
+            {
+                builder.AddBlobServiceClient(_configuration["ConnectionStrings:AzureTables:blob"], preferMsi: true);
+                builder.AddQueueServiceClient(_configuration["ConnectionStrings:AzureTables:queue"], preferMsi: true);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,9 +75,38 @@ namespace Smurl.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapHub<UrlCreatedHub>("/new-url");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");                
             });
+
+            app.UseAzureSignalR(routes =>
+            {
+                routes.MapHub<UrlCreatedHub>("/new-url");
+            });
+        }
+    }
+    internal static class StartupExtensions
+    {
+        public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
+        {
+            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
+            {
+                return builder.AddBlobServiceClient(serviceUri);
+            }
+            else
+            {
+                return builder.AddBlobServiceClient(serviceUriOrConnectionString);
+            }
+        }
+        public static IAzureClientBuilder<QueueServiceClient, QueueClientOptions> AddQueueServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
+        {
+            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
+            {
+                return builder.AddQueueServiceClient(serviceUri);
+            }
+            else
+            {
+                return builder.AddQueueServiceClient(serviceUriOrConnectionString);
+            }
         }
     }
 }
