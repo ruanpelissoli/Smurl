@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    .text-center {
+        margin-top: 40%;
+        position: relative;
+    }
+
+    .btn.btn-dark {
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+    }
+
+    .form-control {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    .hide {
+        display: none;
+    }
+
+    i {
+        cursor: pointer;
+        margin-left: -55px;
+    }
+
+    span {
+        padding: 0;
+    }
+</style>
+
+<article class="text-center">
+    <h1 class="display-4">Smurl!</h1>
+    <p>he protecc. he attakk. but most importantly, he's small.</p>
+    <form id="form" asp-action="Index" class="form-inline">
+        <input type="text" name="url" id="txt-url" class="form-control col-10" placeholder="place your big shitty url here bro" />
+        <button id="mms" type="submit" class="btn btn-dark col-2">make me small!</button>
+    </form>
+
+    <div id="loading" class="hide">
+        <div class="spinner-grow" style="width: 80px; height: 80px" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <br />
+        we are working on it...
+    </div>
+
+    <br />
+    <div class="form-inline hide" id="response-url-div">
+        <div class="col-12">
+            <span>your new small and awasome url is</span>
+            <input type="text" readonly
+                   class="form-control"
+                   style="background-color: transparent; border: none; width: 260px"
+                   id="response-url">
+            <i onclick="copy()" class="fas fa-copy col-2"></i>
+        </div>
+        
+    </div>
+</article>
+
+@section Scripts {
+    <script src="~/js/newUrlCreated.js"></script>
+    <script>
+        function copy() {
+            console.log('ijaksdkasds')
+            var copyText = document.getElementById("response-url");
+
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+
+            document.execCommand("copy");
+            toastr.options.positionClass = 'toast-bottom-right';
+            toastr.success("copy to clipboard");
+        }
+    </script>
+}
