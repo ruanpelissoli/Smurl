@@ -39,7 +39,7 @@ namespace Smurl.Web
         {            
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            services.AddSignalR().AddAzureSignalR();
+            services.AddSignalR(); //.AddAzureSignalR();
             services.AddMediatR(options =>
             {
                 options.AsTransient();
@@ -75,13 +75,14 @@ namespace Smurl.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");                
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<UrlCreatedHub>("/new-url");
             });
 
-            app.UseAzureSignalR(routes =>
-            {
-                routes.MapHub<UrlCreatedHub>("/new-url");
-            });
+            //app.UseAzureSignalR(routes =>
+            //{
+            //    routes.MapHub<UrlCreatedHub>("/new-url");
+            //});
         }
     }
     internal static class StartupExtensions
