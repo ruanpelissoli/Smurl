@@ -42,16 +42,16 @@ ViewData["Title"] = "Home Page";
     </div>
 
     <br />
-    <div class="hide" id="response-url-div">
-        <div class="form-group col-12">
-            <span>your new small and awesome url is</span>
-        </div>
+    <div asp-action="Index" class="form-group hide" id="response-url-div">
+        <span>your new small and awesome url is</span>
         <div class="form-inline">
-            <input type="text" readonly
-                class="form-control col-6"
-                style="background-color: transparent; border: none;"
+            <input type="text" readonly class="form-control col-8"
+                style="background-color: transparent; border: none; text-align:
+                right;"
                 id="response-url">
-            <i onclick="copy()" class="fas fa-copy"></i>
+            <div>
+                <i onclick="copy()" class="fas fa-copy col-4"></i>
+            </div>
         </div>
     </div>
 </article>
